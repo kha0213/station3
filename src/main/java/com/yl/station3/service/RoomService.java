@@ -4,6 +4,8 @@ import com.yl.station3.domain.room.Room;
 import com.yl.station3.domain.room.RoomDeal;
 import com.yl.station3.domain.user.User;
 import com.yl.station3.dto.room.*;
+import com.yl.station3.exception.BusinessException;
+import com.yl.station3.exception.ErrorCode;
 import com.yl.station3.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -86,7 +88,7 @@ public class RoomService {
 
     public RoomResponse getRoomById(Long roomId) {
         Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new IllegalArgumentException("방을 찾을 수 없습니다: " + roomId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.ROOM_NOT_FOUND));
         
         return new RoomResponse(room);
     }
@@ -125,10 +127,10 @@ public class RoomService {
 
     private Room getRoomByIdAndUser(Long roomId, User user) {
         Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new IllegalArgumentException("방을 찾을 수 없습니다: " + roomId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.ROOM_NOT_FOUND));
 
         if (!room.getUser().getId().equals(user.getId())) {
-            throw new IllegalArgumentException("해당 방에 대한 권한이 없습니다.");
+            throw new BusinessException(ErrorCode.ACCESS_DENIED);
         }
 
         return room;

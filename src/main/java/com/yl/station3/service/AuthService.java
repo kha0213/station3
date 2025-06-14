@@ -4,6 +4,8 @@ import com.yl.station3.domain.user.User;
 import com.yl.station3.dto.auth.JwtResponse;
 import com.yl.station3.dto.auth.LoginRequest;
 import com.yl.station3.dto.auth.SignUpRequest;
+import com.yl.station3.exception.BusinessException;
+import com.yl.station3.exception.ErrorCode;
 import com.yl.station3.repository.UserRepository;
 import com.yl.station3.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +32,7 @@ public class AuthService {
     public void signUp(SignUpRequest request) {
         // 이메일 중복 체크
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("이미 사용 중인 이메일입니다: " + request.getEmail());
+            throw new BusinessException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
 
         // 사용자 생성
@@ -45,25 +47,29 @@ public class AuthService {
     }
 
     public JwtResponse login(LoginRequest request) {
-        // 인증 처리
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
+        try {
+            // 인증 처리
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
 
-        // JWT 토큰 생성
-        User user = (User) authentication.getPrincipal();
-        String token = jwtTokenProvider.generateToken(user);
+            // JWT 토큰 생성
+            User user = (User) authentication.getPrincipal();
+            String token = jwtTokenProvider.generateToken(user);
 
-        log.info("사용자 로그인: {}", request.getEmail());
+            log.info("사용자 로그인: {}", request.getEmail());
 
-        return new JwtResponse(token, user.getEmail(), user.getName());
+            return new JwtResponse(token, user.getEmail(), user.getName());
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.AUTHENTICATION_FAILED);
+        }
     }
 
     public User getCurrentUser(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + email));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
 }

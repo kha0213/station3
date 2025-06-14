@@ -22,10 +22,4 @@ public class SignUpRequest {
     @NotBlank(message = "이름은 필수입니다")
     @Size(min = 2, max = 10, message = "이름은 2자 이상 10자 이하여야 합니다")
     private String name;
-
-    public SignUpRequest(String email, String password, String name) {
-        this.email = email;
-        this.password = password;
-        this.name = name;
-    }
 }

@@ -114,7 +114,9 @@ public class RoomController {
             try {
                 searchRequest.setRoomType(com.yl.station3.domain.room.RoomType.valueOf(roomType.toUpperCase()));
             } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("잘못된 방 유형입니다: " + roomType);
+                throw new com.yl.station3.exception.BusinessException(
+                    com.yl.station3.exception.ErrorCode.INVALID_TYPE_VALUE, 
+                    "잘못된 방 유형입니다: " + roomType);
             }
         }
         
@@ -122,7 +124,9 @@ public class RoomController {
             try {
                 searchRequest.setDealType(com.yl.station3.domain.room.DealType.valueOf(dealType.toUpperCase()));
             } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("잘못된 거래 유형입니다: " + dealType);
+                throw new com.yl.station3.exception.BusinessException(
+                    com.yl.station3.exception.ErrorCode.INVALID_TYPE_VALUE, 
+                    "잘못된 거래 유형입니다: " + dealType);
             }
         }
         
@@ -131,7 +135,9 @@ public class RoomController {
             try {
                 searchRequest.setMinDeposit(new java.math.BigDecimal(minDeposit));
             } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("잘못된 최소 보증금 형식입니다: " + minDeposit);
+                throw new com.yl.station3.exception.BusinessException(
+                    com.yl.station3.exception.ErrorCode.INVALID_PRICE_FORMAT, 
+                    "잘못된 최소 보증금 형식입니다: " + minDeposit);
             }
         }
         
@@ -139,7 +145,9 @@ public class RoomController {
             try {
                 searchRequest.setMaxDeposit(new java.math.BigDecimal(maxDeposit));
             } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("잘못된 최대 보증금 형식입니다: " + maxDeposit);
+                throw new com.yl.station3.exception.BusinessException(
+                    com.yl.station3.exception.ErrorCode.INVALID_PRICE_FORMAT, 
+                    "잘못된 최대 보증금 형식입니다: " + maxDeposit);
             }
         }
         
@@ -147,7 +155,9 @@ public class RoomController {
             try {
                 searchRequest.setMinRent(new java.math.BigDecimal(minRent));
             } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("잘못된 최소 월세 형식입니다: " + minRent);
+                throw new com.yl.station3.exception.BusinessException(
+                    com.yl.station3.exception.ErrorCode.INVALID_PRICE_FORMAT, 
+                    "잘못된 최소 월세 형식입니다: " + minRent);
             }
         }
         
@@ -155,7 +165,9 @@ public class RoomController {
             try {
                 searchRequest.setMaxRent(new java.math.BigDecimal(maxRent));
             } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("잘못된 최대 월세 형식입니다: " + maxRent);
+                throw new com.yl.station3.exception.BusinessException(
+                    com.yl.station3.exception.ErrorCode.INVALID_PRICE_FORMAT, 
+                    "잘못된 최대 월세 형식입니다: " + maxRent);
             }
         }
         
