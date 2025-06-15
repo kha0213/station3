@@ -14,6 +14,8 @@ public class ErrorResponse {
     private final String message;
     private final String code;
     private final int status;
+    private final String error;
+    private final String path;
     
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private final LocalDateTime timestamp;

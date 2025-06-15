@@ -1,12 +1,20 @@
 package com.yl.station3.service;
 
 import com.yl.station3.TestHelper;
-import com.yl.station3.domain.room.*;
+import com.yl.station3.domain.room.DealType;
+import com.yl.station3.domain.room.Room;
+import com.yl.station3.domain.room.RoomDeal;
+import com.yl.station3.domain.room.RoomType;
 import com.yl.station3.domain.user.User;
-import com.yl.station3.dto.room.*;
+import com.yl.station3.dto.room.RoomCreateRequest;
+import com.yl.station3.dto.room.RoomDealRequest;
+import com.yl.station3.dto.room.RoomResponse;
+import com.yl.station3.dto.room.RoomSearchRequest;
+import com.yl.station3.dto.room.RoomUpdateRequest;
 import com.yl.station3.exception.BusinessException;
 import com.yl.station3.exception.ErrorCode;
 import com.yl.station3.repository.RoomRepository;
+import com.yl.station3.repository.condition.RoomCondition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,9 +28,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("RoomService 단위 테스트")
@@ -288,14 +300,15 @@ class RoomServiceTest {
     void searchRooms_Success() {
         // given
         List<Room> rooms = Arrays.asList(testRoom);
-        when(roomRepository.findRoomsWithFilters(
-                eq(RoomType.ONE_ROOM),
-                eq(DealType.MONTHLY_RENT),
-                eq(new BigDecimal("500")),
-                eq(new BigDecimal("2000")),
-                isNull(),
-                isNull()
-        )).thenReturn(rooms);
+        RoomCondition condition = RoomCondition
+                .builder()
+                .roomType(RoomType.ONE_ROOM)
+                .dealType(DealType.MONTHLY_RENT)
+                .minDeposit(new BigDecimal("500"))
+                .maxDeposit(new BigDecimal("2000"))
+                .build();
+
+        when(roomRepository.findRoomsByCondition(condition)).thenReturn(rooms);
 
         // when
         List<RoomResponse> responses = roomService.searchRooms(searchRequest);
@@ -304,14 +317,7 @@ class RoomServiceTest {
         assertThat(responses).hasSize(1);
         assertThat(responses.get(0).getTitle()).isEqualTo(testRoom.getTitle());
 
-        verify(roomRepository).findRoomsWithFilters(
-                eq(RoomType.ONE_ROOM),
-                eq(DealType.MONTHLY_RENT),
-                eq(new BigDecimal("500")),
-                eq(new BigDecimal("2000")),
-                isNull(),
-                isNull()
-        );
+        verify(roomRepository).findRoomsByCondition(condition);
     }
 
     @Test
@@ -320,17 +326,14 @@ class RoomServiceTest {
         // given
         RoomSearchRequest emptyRequest = new RoomSearchRequest();
         List<Room> rooms = Arrays.asList(testRoom);
-        when(roomRepository.findRoomsWithFilters(
-                isNull(), isNull(), isNull(), isNull(), isNull(), isNull()
-        )).thenReturn(rooms);
+        RoomCondition condition = RoomCondition.builder().build();
+        when(roomRepository.findRoomsByCondition(condition)).thenReturn(rooms);
 
         // when
         List<RoomResponse> responses = roomService.searchRooms(emptyRequest);
 
         // then
         assertThat(responses).hasSize(1);
-        verify(roomRepository).findRoomsWithFilters(
-                isNull(), isNull(), isNull(), isNull(), isNull(), isNull()
-        );
+        verify(roomRepository).findRoomsByCondition(condition);
     }
 }

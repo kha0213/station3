@@ -5,6 +5,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yl.station3.domain.room.DealType;
 import com.yl.station3.domain.room.Room;
 import com.yl.station3.domain.room.RoomType;
+import com.yl.station3.repository.condition.RoomCondition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -21,46 +22,12 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Room> findRoomsWithFilters(RoomType roomType,
-                                          DealType dealType,
-                                          BigDecimal minDeposit,
-                                          BigDecimal maxDeposit,
-                                          BigDecimal minRent,
-                                          BigDecimal maxRent) {
-
-        BooleanBuilder builder = new BooleanBuilder();
-
-        // 방 유형 필터
-        if (roomType != null) {
-            builder.and(room.roomType.eq(roomType));
-        }
-
-        // 거래 유형 필터
-        if (dealType != null) {
-            builder.and(roomDeal.dealType.eq(dealType));
-        }
-
-        // 보증금 범위 필터
-        if (minDeposit != null) {
-            builder.and(roomDeal.deposit.goe(minDeposit));
-        }
-        if (maxDeposit != null) {
-            builder.and(roomDeal.deposit.loe(maxDeposit));
-        }
-
-        // 월세 범위 필터 (전세의 경우 monthlyRent가 null일 수 있음)
-        if (minRent != null) {
-            builder.and(roomDeal.monthlyRent.isNull().or(roomDeal.monthlyRent.goe(minRent)));
-        }
-        if (maxRent != null) {
-            builder.and(roomDeal.monthlyRent.isNull().or(roomDeal.monthlyRent.loe(maxRent)));
-        }
-
+    public List<Room> findRoomsByCondition(RoomCondition condition) {
         return queryFactory
                 .selectFrom(room)
                 .distinct()
                 .join(room.roomDeals, roomDeal)
-                .where(builder)
+                .where(condition.build())
                 .fetch();
     }
 }

@@ -3,10 +3,14 @@ package com.yl.station3.service;
 import com.yl.station3.domain.room.Room;
 import com.yl.station3.domain.room.RoomDeal;
 import com.yl.station3.domain.user.User;
-import com.yl.station3.dto.room.*;
+import com.yl.station3.dto.room.RoomCreateRequest;
+import com.yl.station3.dto.room.RoomResponse;
+import com.yl.station3.dto.room.RoomSearchRequest;
+import com.yl.station3.dto.room.RoomUpdateRequest;
 import com.yl.station3.exception.BusinessException;
 import com.yl.station3.exception.ErrorCode;
 import com.yl.station3.repository.RoomRepository;
+import com.yl.station3.repository.condition.RoomCondition;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -111,14 +115,16 @@ public class RoomService {
     }
 
     public List<RoomResponse> searchRooms(RoomSearchRequest searchRequest) {
-        List<Room> rooms = roomRepository.findRoomsWithFilters(
-                searchRequest.getRoomType(),
-                searchRequest.getDealType(),
-                searchRequest.getMinDeposit(),
-                searchRequest.getMaxDeposit(),
-                searchRequest.getMinRent(),
-                searchRequest.getMaxRent()
-        );
+        RoomCondition condition = RoomCondition.builder()
+                .roomType(searchRequest.getRoomType())
+                .dealType(searchRequest.getDealType())
+                .minDeposit(searchRequest.getMinDeposit())
+                .maxDeposit(searchRequest.getMaxDeposit())
+                .minRent(searchRequest.getMinRent())
+                .maxRent(searchRequest.getMaxRent())
+                .build();
+        List<Room> rooms = roomRepository.findRoomsByCondition(condition);
+
 
         return rooms.stream()
                 .map(RoomResponse::new)
