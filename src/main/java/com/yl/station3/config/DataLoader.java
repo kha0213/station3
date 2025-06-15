@@ -37,9 +37,9 @@ public class DataLoader implements ApplicationRunner {
         log.info("=== 테스트 데이터 생성 시작 ===");
         
         // 테스트 사용자들 생성
-        User user1 = createTestUser("test@example.com", "password123", "김영롱");
+        User user1 = createTestUser("test@test.com", "1q2w3e4r!", "김영롱");
         User user2 = createTestUser("admin@station3.co.kr", "admin123", "관리자");
-        User user3 = createTestUser("user@test.com", "user123", "김영롱2");
+        User user3 = createTestUser("user@test.com", "1234", "김영롱2");
 
         // 테스트 방들 생성
         createTestRooms(user1, user2, user3);
