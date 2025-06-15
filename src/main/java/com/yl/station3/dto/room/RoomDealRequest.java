@@ -3,12 +3,14 @@ package com.yl.station3.dto.room;
 import com.yl.station3.domain.room.DealType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 
 @Getter
+@Setter
 @NoArgsConstructor
 public class RoomDealRequest {
 

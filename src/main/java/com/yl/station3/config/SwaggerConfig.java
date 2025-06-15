@@ -22,7 +22,6 @@ public class SwaggerConfig {
                                         .bearerFormat("JWT")))
                 .info(new Info()
                         .title("부동산 중개 플랫폼 API")
-                        .description("새로운 부동산 중개 플랫폼의 REST API 문서입니다.")
                         .version("v1.0.0"))
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"));
     }

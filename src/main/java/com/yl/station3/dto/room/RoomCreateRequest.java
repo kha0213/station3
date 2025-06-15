@@ -3,6 +3,7 @@ package com.yl.station3.dto.room;
 import com.yl.station3.domain.room.RoomType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -12,6 +13,7 @@ import javax.validation.constraints.Size;
 import java.util.List;
 
 @Getter
+@Setter
 @NoArgsConstructor
 public class RoomCreateRequest {
 
