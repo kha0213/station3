@@ -3,6 +3,7 @@ package com.yl.station3.service;
 import com.yl.station3.domain.room.Room;
 import com.yl.station3.domain.room.RoomDeal;
 import com.yl.station3.domain.user.User;
+import com.yl.station3.dto.common.PageResponse;
 import com.yl.station3.dto.room.RoomCreateRequest;
 import com.yl.station3.dto.room.RoomResponse;
 import com.yl.station3.dto.room.RoomSearchRequest;
@@ -13,6 +14,8 @@ import com.yl.station3.repository.RoomRepository;
 import com.yl.station3.repository.condition.RoomCondition;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,24 +100,22 @@ public class RoomService {
         return new RoomResponse(room);
     }
 
-    public List<RoomResponse> getMyRooms(String userEmail) {
+    public PageResponse<RoomResponse> getMyRooms(String userEmail, Pageable pageable) {
         User user = authService.getCurrentUser(userEmail);
-        List<Room> rooms = roomRepository.findByUser(user);
+        Page<Room> roomPage = roomRepository.findByUser(user, pageable);
         
-        return rooms.stream()
-                .map(RoomResponse::new)
-                .collect(Collectors.toList());
+        Page<RoomResponse> responsePage = roomPage.map(RoomResponse::new);
+        return PageResponse.of(responsePage);
     }
 
-    public List<RoomResponse> getAllRooms() {
-        List<Room> rooms = roomRepository.findAll();
+    public PageResponse<RoomResponse> getAllRooms(Pageable pageable) {
+        Page<Room> roomPage = roomRepository.findAll(pageable);
         
-        return rooms.stream()
-                .map(RoomResponse::new)
-                .collect(Collectors.toList());
+        Page<RoomResponse> responsePage = roomPage.map(RoomResponse::new);
+        return PageResponse.of(responsePage);
     }
 
-    public List<RoomResponse> searchRooms(RoomSearchRequest searchRequest) {
+    public PageResponse<RoomResponse> searchRooms(RoomSearchRequest searchRequest, Pageable pageable) {
         RoomCondition condition = RoomCondition.builder()
                 .roomType(searchRequest.getRoomType())
                 .dealType(searchRequest.getDealType())
@@ -123,12 +124,10 @@ public class RoomService {
                 .minRent(searchRequest.getMinRent())
                 .maxRent(searchRequest.getMaxRent())
                 .build();
-        List<Room> rooms = roomRepository.findRoomsByCondition(condition);
+        Page<Room> roomPage = roomRepository.findRoomsByCondition(condition, pageable);
 
-
-        return rooms.stream()
-                .map(RoomResponse::new)
-                .collect(Collectors.toList());
+        Page<RoomResponse> responsePage = roomPage.map(RoomResponse::new);
+        return PageResponse.of(responsePage);
     }
 
     private Room getRoomByIdAndUser(Long roomId, User user) {
